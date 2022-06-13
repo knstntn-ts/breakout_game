@@ -3,6 +3,12 @@ import Ball
 import Paddle
 import Bricks
 
+# score variable
+score = 0
+# lives
+lives = 3
+
+# Initialization
 screen = Screen()
 screen.setup(width=800, height=600)
 screen.bgcolor('black')
@@ -11,7 +17,7 @@ screen.tracer(0)
 
 game_is_on = True
 
-# Initialization
+# Initialization of game elements
 paddle = Paddle.Paddle((0, -250))
 my_ball = Ball.Ball()
 # put the bricks on the screen
@@ -29,7 +35,7 @@ sketch.color("white")
 sketch.penup()
 sketch.hideturtle()
 sketch.goto(0, 260)
-sketch.write("Score : 0", align="center", font=("Courier", 24, "normal"))
+sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=("Courier", 24, "normal"))
 
 # Used to track position of the mouse
 pointer = screen.getcanvas()
@@ -38,8 +44,7 @@ pointer.bind('<Motion>', paddle.move)
 # margin for detecting collisions with bricks and paddle
 margin_x = 50
 
-# score variable
-score = 0
+
 while game_is_on:
     screen.update()
 
@@ -52,7 +57,12 @@ while game_is_on:
         my_ball.ybounce()
     # Detect collision with the bottom wall
     if my_ball.ycor() < -290:
-        game_is_on = False
+        lives -= 1
+        my_ball.reset_position()
+        sketch.clear()
+        sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=("Courier", 24, "normal"))
+        if lives == 0:
+            game_is_on = False
 
     # Detect collision with the paddle
     if -240 > my_ball.ycor() > -250 and paddle.xcor()+margin_x > my_ball.xcor() > paddle.xcor()-margin_x:
@@ -66,7 +76,7 @@ while game_is_on:
                     bricks[i].xcor()+margin_x > my_ball.xcor() > bricks[i].xcor()-margin_x:
                 score += 1
                 sketch.clear()
-                sketch.write("Score: {}".format(score), align="center", font=("Courier", 24, "normal"))
+                sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=("Courier", 24, "normal"))
                 my_ball.sety(bricks[i].ycor() + 5)
                 my_ball.ybounce()
                 bricks[i].reset() # to remove the white square
@@ -77,8 +87,11 @@ while game_is_on:
     if len(bricks) == 0:
         game_is_on = False
         sketch.clear()
-        sketch.write("You final score: {}".format(score), align="center", font=("Courier", 24, "normal"))
-
+        sketch.write("You won! You final score: {}".format(score), align="center", font=("Courier", 24, "normal"))
+    elif lives == 0:
+        game_is_on = False
+        sketch.clear()
+        sketch.write("You lost :( You final score: {}".format(score), align="center", font=("Courier", 24, "normal"))
     my_ball.move()
 
 screen.exitonclick()
