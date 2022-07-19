@@ -1,9 +1,9 @@
 from turtle import Turtle
-from Paddle import Paddle
 
 
 class Brick(Turtle):
     def __init__(self, position):
+        # --- INITIALIZE ONE BRICK --- #
         super().__init__()
         self.goto(position)
         self.shape('square')

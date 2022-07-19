@@ -1,14 +1,16 @@
+##### IMPORT STATEMENTS
 from turtle import Screen, Turtle
 import Ball
 import Paddle
 import Bricks
 
+##### GAME VARIABLES
 # score variable
 score = 0
 # lives
 lives = 3
 
-# Initialization
+# --- Initialization --- #
 screen = Screen()
 screen.setup(width=800, height=600)
 screen.bgcolor('black')
@@ -17,10 +19,11 @@ screen.tracer(0)
 
 game_is_on = True
 
-# Initialization of game elements
+# --- SETUP OF GAME ELEMENTS --- #
 paddle = Paddle.Paddle((0, -250))
 my_ball = Ball.Ball()
-# put the bricks on the screen
+# Bricks are saved in a dictionary with 'cnt' as their id for reference in the code
+# Put the bricks on the screen, 3 rows and 4 columns
 bricks = {}
 cnt = 0
 for j in range(3):
@@ -28,7 +31,7 @@ for j in range(3):
         bricks.update({cnt: Bricks.Brick([i * 200 - 300, 75 + j * 75])})
         cnt += 1
 
-# Displays the score
+# --- DISPLAY SETUP --- #
 sketch = Turtle()
 sketch.speed(0)
 sketch.color("white")
@@ -41,11 +44,12 @@ sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=(
 pointer = screen.getcanvas()
 pointer.bind('<Motion>', paddle.move)
 
-# margin for detecting collisions with bricks and paddle
+# margin for detecting collisions with bricks and the ball
 margin_x = 50
 
-
+# --- GAME LOOP --- #
 while game_is_on:
+    # Update the screen to see if there are any changes.
     screen.update()
 
     ### Collisions with the walls
@@ -57,11 +61,13 @@ while game_is_on:
         my_ball.ybounce()
     # Detect collision with the bottom wall
     if my_ball.ycor() < -290:
+        # In this case the ball is out, so minus one life.
         lives -= 1
         my_ball.reset_position()
         sketch.clear()
         sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=("Courier", 24, "normal"))
         if lives == 0:
+            # End the game if no more lives
             game_is_on = False
 
     # Detect collision with the paddle
@@ -79,11 +85,11 @@ while game_is_on:
                 sketch.write("Score: {}. Lives: {}".format(score, lives), align="center", font=("Courier", 24, "normal"))
                 my_ball.sety(bricks[i].ycor() + 5)
                 my_ball.ybounce()
-                bricks[i].reset() # to remove the white square
+                bricks[i].reset() # to remove the brick
                 bricks.pop(i) # pop from the dictionary
                 break # to exit for loop, otherwise gives an error that dictionary changed during iteration
 
-    # if there are no more bricks left stop the game
+    # If there are no more bricks left stop the game
     if len(bricks) == 0:
         game_is_on = False
         sketch.clear()
